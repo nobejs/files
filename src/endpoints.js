@@ -9,7 +9,10 @@ module.exports = (app) => {
 
   return [
     {
-      endpoints: [],
+      endpoints: [
+        ["post", "/upload", "Files/CanUpload"],
+        ["get", "/show/:file_uuid", "Files/CanView"],
+      ],
     },
   ];
 };
