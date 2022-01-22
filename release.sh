@@ -13,4 +13,4 @@ cp="gh release create $PACKAGE_VERSION --notes \"$PACKAGE_VERSION\" -p"
 
 echo $cp
 
-# eval "$cp"%
+eval "$cp"%
