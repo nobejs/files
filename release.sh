@@ -1,6 +1,8 @@
 #!/bin/bash
 eval yarn bump:pre
 
+eval git push origin master
+
 PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
