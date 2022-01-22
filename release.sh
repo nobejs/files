@@ -7,12 +7,13 @@ PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
   | awk -F: '{ print $2 }' \
-  | sed 's/[",]//g')
+  | sed 's/[",]//g' \
+  | tr -d '[[:space:]]')
 
 echo $PACKAGE_VERSION
 
-cp="gh release create $PACKAGE_VERSION --notes \"$PACKAGE_VERSION\" -p"
+cp="gh release create v$PACKAGE_VERSION --notes \"v$PACKAGE_VERSION\" -p"
 
 echo $cp
 
-eval "$cp"%
+eval "$cp"
