@@ -20,4 +20,4 @@ You can currently run Nobe following:
 
 Visit [NobeJs Website](https://nobejs.org)
 
-gh release create v1.1.2-alpha.8 --notes "v1.1.2-alpha.8" -p
+gh release create v0.1.1-alpha.0 --notes "v0.1.1-alpha.0" -p
