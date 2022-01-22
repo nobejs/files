@@ -19,3 +19,5 @@ You can currently run Nobe following:
 ## Documentation
 
 Visit [NobeJs Website](https://nobejs.org)
+
+gh release create v1.1.2-alpha.8 --notes "v1.1.2-alpha.8" -p
