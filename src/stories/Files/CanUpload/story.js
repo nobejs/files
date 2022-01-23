@@ -1,4 +1,4 @@
-const uploadtoS3 = requireFunction("uploadtoS3");
+const uploadtoS3 = requireFunction("uploadToS3");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const pickKeysFromObject = requireUtil("pickKeysFromObject");
 var uuid = require("uuid");
