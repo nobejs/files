@@ -1,7 +1,16 @@
 const Config = require("./config")();
 const httpServer = requireHttpServer();
 
-const server = httpServer({});
+const server = httpServer({
+  rewriteUrl: (req) => {
+    if (process.env.URL_PREFIX !== "") {
+      let newUrl = req.url.replace(process.env.URL_PREFIX, "");
+      return newUrl;
+    } else {
+      return req.url;
+    }
+  },
+});
 
 server.register(
   require("fastify-multipart", {
