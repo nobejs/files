@@ -38,4 +38,4 @@ jobs:
 
       - name: docker push latest
         run: |
-          docker push nobedocker/access:latest
+          docker push nobedocker/files:latest
