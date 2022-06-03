@@ -28,10 +28,14 @@ jobs:
       - name: Echo
         run: echo nobedocker/files:${{ steps.get_version.outputs.VERSION }}
 
-      - name: docker build teams
+      - name: docker build files
         run: |
-          docker build . -t nobedocker/files:${{ steps.get_version.outputs.VERSION }}
+          docker build . -t nobedocker/files:${{ steps.get_version.outputs.VERSION }} -t nobedocker/files:latest
 
       - name: docker push
         run: |
           docker push nobedocker/files:${{ steps.get_version.outputs.VERSION }}
+
+      - name: docker push latest
+        run: |
+          docker push nobedocker/access:latest
