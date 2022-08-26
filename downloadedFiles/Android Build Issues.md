@@ -1,0 +1,6 @@
+- app gradle version should be same in android studio
+- manual linking of packages takes few steps (by making below file changes)
+  - build.gradle
+  - MainApplication.java
+  - MainActivity.java
+  - settings.gradle

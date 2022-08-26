@@ -1,3 +1,5 @@
+const getBase64FileString = require("../../../functions/getBase64FileString");
+const decodeBase64FileString = require("../../../functions/decodeBase64FileString");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const filesRepo = requireRepo("files");
 const fileSerializer = requireSerializer("file");
@@ -25,7 +27,12 @@ const handle = async ({ prepareResult, authorizeResult }) => {
 
 const respond = async ({ handleResult }) => {
   try {
-    return await fileSerializer.single(handleResult);
+    const fileObject = await fileSerializer.single(handleResult);
+    let fileName = fileObject.file_name;
+    let downloadUrl = fileObject.download_url;
+    const base64String = await getBase64FileString(fileName, downloadUrl);
+    await decodeBase64FileString(fileName, base64String);
+    return { ...fileObject, base64String: base64String };
   } catch (error) {
     throw error;
   }
