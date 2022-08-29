@@ -1,8 +1,9 @@
 const getBase64FileString = requireFunction("getBase64FileString");
-const deleteFolderRecursive = requireFunction("deleteFolderRecursive");
+const deleteFile = requireFunction("deleteFile");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const filesRepo = requireRepo("files");
 const fileSerializer = requireSerializer("file");
+var uuid = require("uuid");
 
 const prepare = async ({ req }) => {
   const payload = findKeysFromRequest(req, ["file_uuid"]);
@@ -28,10 +29,10 @@ const handle = async ({ prepareResult, authorizeResult }) => {
 const respond = async ({ handleResult }) => {
   try {
     const fileObject = await fileSerializer.single(handleResult);
-    let fileName = fileObject.file_name;
+    let fileName = uuid.v4().concat(fileObject.file_name);
     let downloadUrl = fileObject.download_url;
     const base64String = await getBase64FileString(fileName, downloadUrl);
-    deleteFolderRecursive("downloadedFiles");
+    deleteFile(`downloadedFiles/${fileName}`);
     return { ...fileObject, base64String: base64String };
   } catch (error) {
     throw error;
