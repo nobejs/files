@@ -1,5 +1,5 @@
-const getBase64FileString = require("../../../functions/getBase64FileString");
-const decodeBase64FileString = require("../../../functions/decodeBase64FileString");
+const getBase64FileString = requireFunction("getBase64FileString");
+const deleteFolderRecursive = requireFunction("deleteFolderRecursive");
 const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const filesRepo = requireRepo("files");
 const fileSerializer = requireSerializer("file");
@@ -31,7 +31,7 @@ const respond = async ({ handleResult }) => {
     let fileName = fileObject.file_name;
     let downloadUrl = fileObject.download_url;
     const base64String = await getBase64FileString(fileName, downloadUrl);
-    await decodeBase64FileString(fileName, base64String);
+    deleteFolderRecursive("downloadedFiles");
     return { ...fileObject, base64String: base64String };
   } catch (error) {
     throw error;
