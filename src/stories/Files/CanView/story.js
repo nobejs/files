@@ -6,7 +6,7 @@ const fileSerializer = requireSerializer("file");
 var uuid = require("uuid");
 
 const prepare = async ({ req }) => {
-  const payload = findKeysFromRequest(req, ["file_uuid"]);
+  const payload = findKeysFromRequest(req, ["file_uuid", "file_format"]);
   return payload;
 };
 
@@ -20,7 +20,10 @@ const authorize = async ({ prepareResult }) => {
 
 const handle = async ({ prepareResult, authorizeResult }) => {
   try {
-    return await filesRepo.first({ uuid: prepareResult.file_uuid });
+    const respondResult = await filesRepo.first({
+      uuid: prepareResult.file_uuid,
+    });
+    return { ...respondResult, fileFormat: prepareResult.file_format };
   } catch (error) {
     throw error;
   }
@@ -29,11 +32,16 @@ const handle = async ({ prepareResult, authorizeResult }) => {
 const respond = async ({ handleResult }) => {
   try {
     const fileObject = await fileSerializer.single(handleResult);
-    let fileName = uuid.v4().concat(fileObject.file_name);
-    let downloadUrl = fileObject.download_url;
-    const base64String = await getBase64FileString(fileName, downloadUrl);
-    deleteFile(`downloadedFiles/${fileName}`);
-    return { ...fileObject, base64String: base64String };
+    if (handleResult.fileFormat === "base64") {
+      let fileName = `${
+        Date.now() * 1000 + "-" + uuid.v4() + "-" + fileObject.file_name
+      }`;
+      let downloadUrl = fileObject.download_url;
+      const base64String = await getBase64FileString(fileName, downloadUrl);
+      deleteFile(`downloadedFiles/${fileName}`);
+      return { ...fileObject, base64String: base64String };
+    }
+    return fileObject;
   } catch (error) {
     throw error;
   }
