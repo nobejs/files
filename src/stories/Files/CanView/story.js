@@ -7,7 +7,11 @@ var uuid = require("uuid");
 const getCDNConfigs = requireFunction("getCDNConfigs");
 
 const prepare = async ({ req }) => {
-  const payload = findKeysFromRequest(req, ["file_uuid", "file_format"]);
+  const payload = findKeysFromRequest(req, [
+    "file_uuid",
+    "file_format",
+    "cdn_optimization",
+  ]);
   return payload;
 };
 
@@ -30,7 +34,7 @@ const handle = async ({ prepareResult, authorizeResult }) => {
   }
 };
 
-const respond = async ({ handleResult }) => {
+const respond = async ({ prepareResult, handleResult }) => {
   try {
     const fileObject = await fileSerializer.single(handleResult);
     if (handleResult.fileFormat === "base64") {
@@ -41,7 +45,10 @@ const respond = async ({ handleResult }) => {
       let downloadUrl = fileObject.download_url;
       if (fileObject.imgix_url) {
         downloadUrl = `${fileObject.imgix_url}`;
-        const cdnConfigs = await getCDNConfigs();
+        let cdnOptimization = prepareResult.cdn_optimization;
+        const cdnConfigs = await getCDNConfigs({
+          cdnOptimizationAttribute: cdnOptimization,
+        });
         if (cdnConfigs) {
           downloadUrl = `${fileObject.imgix_url}?${cdnConfigs}`;
         }
