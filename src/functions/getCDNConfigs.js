@@ -1,4 +1,4 @@
-module.exports = async function () {
+module.exports = async function ({ cdnOptimizationAttribute = "thumbnail" }) {
   try {
     let defaultCDNImageOptimizationConfigs = process.env.CDN_OPTIMIZATIONS;
 
@@ -9,10 +9,25 @@ module.exports = async function () {
       defaultCDNImageOptimizationConfigs = JSON.parse(
         defaultCDNImageOptimizationConfigs
       );
-      // **Note: thumbnail is the default configuration we are passing to the imgix url
-      thumbnailConfig = defaultCDNImageOptimizationConfigs.thumbnail;
+
+      const validCDNConfigAttributes = ["thumbnail", "reduced_quality"];
+
+      if (cdnOptimizationAttribute) {
+        const cdnImageOptimizationAttributeValue =
+          validCDNConfigAttributes.find((validCDNConfigAttribute) => {
+            return validCDNConfigAttribute === cdnOptimizationAttribute;
+          });
+
+        if (cdnImageOptimizationAttributeValue) {
+          // **Note: thumbnail is the default configuration we are passing to the imgix url
+          defaultCdnImageConfig =
+            defaultCDNImageOptimizationConfigs[
+              `${cdnImageOptimizationAttributeValue}`
+            ];
+        }
+      }
     }
-    return thumbnailConfig;
+    return defaultCdnImageConfig;
   } catch (error) {
     return false;
   }
