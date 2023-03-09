@@ -4,6 +4,5 @@ upgrade-nobejs/
 .DS_Store
 .git
 .env.jest
-.env.*
 downloadedFiles
 base64DecodedFiles
