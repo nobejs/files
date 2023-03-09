@@ -4,6 +4,7 @@ const findKeysFromRequest = requireUtil("findKeysFromRequest");
 const filesRepo = requireRepo("files");
 const fileSerializer = requireSerializer("file");
 var uuid = require("uuid");
+const getCDNConfigs = requireFunction("getCDNConfigs");
 
 const prepare = async ({ req }) => {
   const payload = findKeysFromRequest(req, ["file_uuid", "file_format"]);
@@ -36,7 +37,16 @@ const respond = async ({ handleResult }) => {
       let fileName = `${
         Date.now() * 1000 + "-" + uuid.v4() + "-" + fileObject.file_name
       }`;
+
       let downloadUrl = fileObject.download_url;
+      if (fileObject.imgix_url) {
+        downloadUrl = `${fileObject.imgix_url}`;
+        const cdnConfigs = await getCDNConfigs();
+        if (cdnConfigs) {
+          downloadUrl = `${fileObject.imgix_url}?${cdnConfigs}`;
+        }
+      }
+
       const base64String = await getBase64FileString(fileName, downloadUrl);
       deleteFile(`downloadedFiles/${fileName}`);
       return { ...fileObject, base64String: base64String };
