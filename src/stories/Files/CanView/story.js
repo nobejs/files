@@ -43,20 +43,35 @@ const respond = async ({ prepareResult, handleResult }) => {
       }`;
 
       let downloadUrl = fileObject.download_url;
+      let optimizedURLs = {};
       if (fileObject.imgix_url) {
         downloadUrl = `${fileObject.imgix_url}`;
         let cdnOptimization = prepareResult.cdn_optimization;
         const cdnConfigs = await getCDNConfigs({
           cdnOptimizationAttribute: cdnOptimization,
         });
-        if (cdnConfigs) {
-          downloadUrl = `${fileObject.imgix_url}?${cdnConfigs}`;
+        if (cdnConfigs && cdnConfigs.defaultCdnImageConfig) {
+          downloadUrl = `${fileObject.imgix_url}?${cdnConfigs.defaultCdnImageConfig}`;
+        }
+        if (cdnConfigs && cdnConfigs.validCDNConfigAttributes) {
+          cdnConfigs.validCDNConfigAttributes.forEach((attribute) => {
+            if (cdnConfigs.validCDNConfigAttributesConfigs) {
+              optimizedURLs[
+                `${attribute}`
+              ] = `${fileObject.imgix_url}?${cdnConfigs.validCDNConfigAttributesConfigs[attribute]}`;
+            }
+          });
         }
       }
 
       const base64String = await getBase64FileString(fileName, downloadUrl);
       deleteFile(`downloadedFiles/${fileName}`);
-      return { ...fileObject, base64String: base64String };
+
+      return {
+        ...fileObject,
+        optimizedUrls: { ...optimizedURLs },
+        base64String: base64String,
+      };
     }
     return fileObject;
   } catch (error) {
