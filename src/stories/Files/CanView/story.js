@@ -37,6 +37,15 @@ const handle = async ({ prepareResult, authorizeResult }) => {
 const respond = async ({ prepareResult, handleResult }) => {
   try {
     const fileObject = await fileSerializer.single(handleResult);
+    const fileContentType = fileObject.mime;
+    const fileExtension = fileObject.mime && fileObject.mime.split("/").pop();
+    const isImageTypeMatched =
+      /^image\/(jpg|jpeg|png|gif|bmp|tif|tiff|webp|avif|svg|ico|psd)$/.test(
+        fileContentType
+      );
+    console.log("fileContentType: ", fileContentType);
+    console.log("fileExtension: ", fileExtension);
+    console.log("isImageTypeMatched: ", isImageTypeMatched);
     if (handleResult.fileFormat === "base64") {
       let fileName = `${
         Date.now() * 1000 + "-" + uuid.v4() + "-" + fileObject.file_name
@@ -46,21 +55,23 @@ const respond = async ({ prepareResult, handleResult }) => {
       let optimizedURLs = {};
       if (fileObject.imgix_url) {
         downloadUrl = `${fileObject.imgix_url}`;
-        let cdnOptimization = prepareResult.cdn_optimization;
-        const cdnConfigs = await getCDNConfigs({
-          cdnOptimizationAttribute: cdnOptimization,
-        });
-        if (cdnConfigs && cdnConfigs.defaultCdnImageConfig) {
-          downloadUrl = `${fileObject.imgix_url}?${cdnConfigs.defaultCdnImageConfig}`;
-        }
-        if (cdnConfigs && cdnConfigs.validCDNConfigAttributes) {
-          cdnConfigs.validCDNConfigAttributes.forEach((attribute) => {
-            if (cdnConfigs.validCDNConfigAttributesConfigs) {
-              optimizedURLs[
-                `${attribute}`
-              ] = `${fileObject.imgix_url}?${cdnConfigs.validCDNConfigAttributesConfigs[attribute]}`;
-            }
+        if (isImageTypeMatched) {
+          let cdnOptimization = prepareResult.cdn_optimization;
+          const cdnConfigs = await getCDNConfigs({
+            cdnOptimizationAttribute: cdnOptimization,
           });
+          if (cdnConfigs && cdnConfigs.defaultCdnImageConfig) {
+            downloadUrl = `${fileObject.imgix_url}?${cdnConfigs.defaultCdnImageConfig}`;
+          }
+          if (cdnConfigs && cdnConfigs.validCDNConfigAttributes) {
+            cdnConfigs.validCDNConfigAttributes.forEach((attribute) => {
+              if (cdnConfigs.validCDNConfigAttributesConfigs) {
+                optimizedURLs[
+                  `${attribute}`
+                ] = `${fileObject.imgix_url}?${cdnConfigs.validCDNConfigAttributesConfigs[attribute]}`;
+              }
+            });
+          }
         }
       }
 
