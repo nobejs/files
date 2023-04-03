@@ -3,7 +3,7 @@ module.exports = async function ({ cdnOptimizationAttribute = "thumbnail" }) {
     const validCDNConfigAttributes = ["thumbnail", "reduced_quality"];
     let validCDNConfigAttributesConfigs = {};
     let defaultCDNImageOptimizationConfigs = process.env.CDN_OPTIMIZATIONS;
-
+    let defaultCdnImageConfig = null;
     if (
       defaultCDNImageOptimizationConfigs &&
       typeof defaultCDNImageOptimizationConfigs === "string"
@@ -43,7 +43,7 @@ module.exports = async function ({ cdnOptimizationAttribute = "thumbnail" }) {
       validCDNConfigAttributesConfigs: validCDNConfigAttributesConfigs,
     };
   } catch (error) {
-    console.log('error: ', error);
+    console.log("error: ", error);
     return false;
   }
 };
