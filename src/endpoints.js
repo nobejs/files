@@ -9,6 +9,7 @@ const getNumFiles = async (dir) => {
 module.exports = (app) => {
   app.get("/health", async (request, res) => {
     try {
+      console.log('CALLING_HEALTH-files');
       let numberOfFilesInMigrationPath = await getNumFiles(
         knex.migrate.config.migrationSource.migrationsPaths[0]
       );
@@ -43,6 +44,7 @@ module.exports = (app) => {
         });
       }
     } catch (error) {
+      console.log("ERR_LOG_IN_HEALTH", JSON.stringify(error));
       if (process.env.DEBUG === "true") {
         console.log(error);
       }
@@ -50,7 +52,12 @@ module.exports = (app) => {
   });
 
   app.get("/liveness", async (req, res) => {
-    return res.code(200).send({ status: "Files Service is alive" });
+    try {
+      console.log('CALLING_LIVENESS-files');
+      return res.code(200).send({ status: "Files Service is alive" });
+    } catch (error) {
+      console.log("ERR_LOG_IN_liveness", JSON.stringify(error));
+    }
   });
 
   app.get("/readiness", async (req, res) => {
