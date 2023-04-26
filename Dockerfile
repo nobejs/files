@@ -1,4 +1,4 @@
-FROM node:15-slim AS stage1
+FROM node:16-slim AS stage1
 
 RUN apt-get update \
     && mkdir -p /usr/share/man/man1 \
@@ -15,7 +15,7 @@ RUN yarn
 
 COPY . .
 
-FROM node:15-slim
+FROM node:16-slim
 COPY --from=stage1 /app /app
 WORKDIR /app
 EXPOSE 3000
