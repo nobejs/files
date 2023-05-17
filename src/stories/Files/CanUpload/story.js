@@ -28,8 +28,9 @@ const authorize = async ({ prepareResult }) => {
 
 const handle = async ({ prepareResult, authorizeResult }) => {
   try {
-    let fileName = uuid.v4();
     let uploadedFile = prepareResult.uploadedFile;
+    const uploadedFileNameWithoutSpaces = uploadedFile.filename && uploadedFile.filename.split(' ').join('').toLowerCase();
+    let fileName = `${uuid.v4()}_${uploadedFileNameWithoutSpaces}`;
 
     let keys = ["owner_service", "owner_identifier", "meta"];
     let fileObject = {};
