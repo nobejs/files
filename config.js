@@ -38,10 +38,12 @@ module.exports = () => {
     errorHandler: "./core/errorHandler",
     notFoundHandler: "./core/notFoundHandler",
     authMiddleware: "./core/authMiddleware",
+    corsMiddleware: "./core/corsMiddleware",
     loadEndpoints: "./core/loadEndpoints",
     validator: "./core/validator",
     endpoints: "./src/endpoints",
     excludeFromAuth: ["GET /liveness", "GET /readiness", "GET /health"],
     responseKey: "respondResult",
+    enableCORS: true,
   };
 };
