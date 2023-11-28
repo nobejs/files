@@ -7,7 +7,11 @@ module.exports = function (app) {
   const apis = endpoints(app);
   apis.forEach((api) => {
     api.endpoints.forEach((endpoint, i) => {
+      // console.log("endpoint", endpoint);
+
       let apiPath = generateApiPath(api, endpoint);
+
+      // console.log("endpoint[0]", endpoint[0]);
 
       app[endpoint[0]](apiPath, async (req, res, next) => {
         let result = await endpointStrategy(endpoint[2], {
