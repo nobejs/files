@@ -31,9 +31,19 @@ const setImgixUrl = (file) => {
   return file;
 };
 
+const setSirvUrl = (file) => {
+  const sirvUrl = process.env.SIRV_URL;
+  const pathURL = file["path_to_file"];
+  if (sirvUrl && typeof sirvUrl === "string") {
+    file["sirv_url"] = sirvUrl.concat(
+      pathURL.slice(pathURL.lastIndexOf("/") + 1, pathURL.length)
+    );
+  }
+  return file;
+};
+
 module.exports = async (instance, includes = []) => {
   instance = setDownloadurl(instance);
-  instance = setImgixUrl(instance);
 
   const attributes = [
     "uuid",
@@ -46,8 +56,18 @@ module.exports = async (instance, includes = []) => {
     "created_at",
     "updated_at",
     "download_url",
-    "imgix_url",
   ];
+
+  if (process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "IMGIX") {
+    instance = setImgixUrl(instance);
+    attributes.push("imgix_url");
+  }
+
+  if (process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "SIRV") {
+    instance = setSirvUrl(instance);
+    attributes.push("sirv_url");
+  }
+
   const tokenObject = pickKeysFromObject(instance, attributes);
   return tokenObject;
 };

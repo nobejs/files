@@ -53,12 +53,16 @@ const respond = async ({ prepareResult, handleResult }) => {
 
       let downloadUrl = fileObject.download_url;
       let optimizedURLs = {};
-      if (fileObject.imgix_url) {
+      if (
+        fileObject.imgix_url &&
+        process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "IMGIX"
+      ) {
         downloadUrl = `${fileObject.imgix_url}`;
         if (isImageTypeMatched) {
           let cdnOptimization = prepareResult.cdn_optimization;
           const cdnConfigs = await getCDNConfigs({
             cdnOptimizationAttribute: cdnOptimization,
+            optimizationProvider: "IMGIX",
           });
           if (cdnConfigs && cdnConfigs.defaultCdnImageConfig) {
             downloadUrl = `${fileObject.imgix_url}?${cdnConfigs.defaultCdnImageConfig}`;
@@ -69,6 +73,33 @@ const respond = async ({ prepareResult, handleResult }) => {
                 optimizedURLs[
                   `${attribute}`
                 ] = `${fileObject.imgix_url}?${cdnConfigs.validCDNConfigAttributesConfigs[attribute]}`;
+              }
+            });
+          }
+        }
+      }
+
+      if (
+        fileObject.sirv_url &&
+        process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "SIRV"
+      ) {
+        downloadUrl = `${fileObject.sirv_url}`;
+        if (isImageTypeMatched) {
+          let cdnOptimization = prepareResult.cdn_optimization;
+          const cdnConfigs = await getCDNConfigs({
+            cdnOptimizationAttribute: cdnOptimization,
+            optimizationProvider: "SIRV",
+          });
+          if (cdnConfigs && cdnConfigs.defaultCdnImageConfig) {
+            downloadUrl = `${fileObject.sirv_url}?${cdnConfigs.defaultCdnImageConfig}`;
+          }
+
+          if (cdnConfigs && cdnConfigs.validCDNConfigAttributes) {
+            cdnConfigs.validCDNConfigAttributes.forEach((attribute) => {
+              if (cdnConfigs.validCDNConfigAttributesConfigs) {
+                optimizedURLs[
+                  `${attribute}`
+                ] = `${fileObject.sirv_url}?${cdnConfigs.validCDNConfigAttributesConfigs[attribute]}`;
               }
             });
           }
