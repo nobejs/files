@@ -1,8 +1,20 @@
-module.exports = async function ({ cdnOptimizationAttribute = "thumbnail" }) {
+module.exports = async function ({
+  cdnOptimizationAttribute = "thumbnail",
+  optimizationProvider = "IMGIX",
+}) {
   try {
     const validCDNConfigAttributes = ["thumbnail", "reduced_quality"];
     let validCDNConfigAttributesConfigs = {};
-    let defaultCDNImageOptimizationConfigs = process.env.CDN_OPTIMIZATIONS;
+    let defaultCDNImageOptimizationConfigs;
+
+    if (optimizationProvider === "IMGIX") {
+      defaultCDNImageOptimizationConfigs = process.env.CDN_OPTIMIZATIONS;
+    }
+
+    if (optimizationProvider === "SIRV") {
+      defaultCDNImageOptimizationConfigs = process.env.CDN_OPTIMIZATIONS_SIRV;
+    }
+    
     let defaultCdnImageConfig = null;
     if (
       defaultCDNImageOptimizationConfigs &&
