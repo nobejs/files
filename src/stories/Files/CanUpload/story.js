@@ -4,6 +4,9 @@ const pickKeysFromObject = requireUtil("pickKeysFromObject");
 var uuid = require("uuid");
 const filesRepo = requireRepo("files");
 const fileSerializer = requireSerializer("file");
+const removeSpecialCharactersFromFileName = requireFunction(
+  "removeSpecialCharactersFromFileName"
+);
 
 const prepare = async ({ reqQuery, reqBody, reqParams, req }) => {
   const payload = findKeysFromRequest(req, [
@@ -29,8 +32,15 @@ const authorize = async ({ prepareResult }) => {
 const handle = async ({ prepareResult, authorizeResult }) => {
   try {
     let uploadedFile = prepareResult.uploadedFile;
-    const uploadedFileNameWithoutSpaces = uploadedFile.filename && uploadedFile.filename.split(' ').join('').toLowerCase();
-    let fileName = `${uuid.v4()}_${uploadedFileNameWithoutSpaces}`;
+    const uploadedFileNameWithoutSpaces =
+      uploadedFile.filename &&
+      uploadedFile.filename.split(" ").join("").toLowerCase();
+
+    let filteredFileName = removeSpecialCharactersFromFileName(
+      uploadedFileNameWithoutSpaces
+    );
+
+    let fileName = `${uuid.v4()}_${filteredFileName}`;
 
     let keys = ["owner_service", "owner_identifier", "meta"];
     let fileObject = {};
