@@ -14,6 +14,11 @@ module.exports = async function ({
     if (optimizationProvider === "SIRV") {
       defaultCDNImageOptimizationConfigs = process.env.CDN_OPTIMIZATIONS_SIRV;
     }
+
+    if (optimizationProvider === "IMAGE_KIT") {
+      defaultCDNImageOptimizationConfigs =
+        process.env.CDN_OPTIMIZATIONS_IMAGE_KIT;
+    }
     
     let defaultCdnImageConfig = null;
     if (
