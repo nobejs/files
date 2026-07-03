@@ -43,7 +43,7 @@ const setSirvUrl = (file) => {
 };
 
 const setImageKitUrl = (file) => {
-  const imageKitUrl = process.env.IMAGE_KIT;
+  const imageKitUrl = process.env.IMAGE_KIT_URL;
   const pathURL = file["path_to_file"];
   if (imageKitUrl && typeof imageKitUrl === "string") {
     file["image_kit_url"] = imageKitUrl.concat(
