@@ -106,6 +106,33 @@ const respond = async ({ prepareResult, handleResult }) => {
         }
       }
 
+      if (
+        fileObject.image_kit_url &&
+        process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "IMAGE_KIT"
+      ) {
+        downloadUrl = `${fileObject.image_kit_url}`;
+        if (isImageTypeMatched) {
+          let cdnOptimization = prepareResult.cdn_optimization;
+          const cdnConfigs = await getCDNConfigs({
+            cdnOptimizationAttribute: cdnOptimization,
+            optimizationProvider: "IMAGE_KIT",
+          });
+          if (cdnConfigs && cdnConfigs.defaultCdnImageConfig) {
+            downloadUrl = `${fileObject.image_kit_url}?${cdnConfigs.defaultCdnImageConfig}`;
+          }
+
+          if (cdnConfigs && cdnConfigs.validCDNConfigAttributes) {
+            cdnConfigs.validCDNConfigAttributes.forEach((attribute) => {
+              if (cdnConfigs.validCDNConfigAttributesConfigs) {
+                optimizedURLs[
+                  `${attribute}`
+                ] = `${fileObject.image_kit_url}?${cdnConfigs.validCDNConfigAttributesConfigs[attribute]}`;
+              }
+            });
+          }
+        }
+      }
+
       const base64String = await getBase64FileString(fileName, downloadUrl);
       deleteFile(`downloadedFiles/${fileName}`);
 

@@ -42,6 +42,17 @@ const setSirvUrl = (file) => {
   return file;
 };
 
+const setImageKitUrl = (file) => {
+  const imageKitUrl = process.env.IMAGE_KIT_URL;
+  const pathURL = file["path_to_file"];
+  if (imageKitUrl && typeof imageKitUrl === "string") {
+    file["image_kit_url"] = imageKitUrl.concat(
+      pathURL.slice(pathURL.lastIndexOf("/") + 1, pathURL.length)
+    );
+  }
+  return file;
+};
+
 module.exports = async (instance, includes = []) => {
   instance = setDownloadurl(instance);
 
@@ -66,6 +77,11 @@ module.exports = async (instance, includes = []) => {
   if (process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "SIRV") {
     instance = setSirvUrl(instance);
     attributes.push("sirv_url");
+  }
+
+  if (process.env.DEFAULT_IMAGE_OPTIMIZATION_PROVIDER === "IMAGE_KIT") {
+    instance = setImageKitUrl(instance);
+    attributes.push("image_kit_url");
   }
 
   const tokenObject = pickKeysFromObject(instance, attributes);
